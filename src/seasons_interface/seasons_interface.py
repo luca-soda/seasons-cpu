@@ -8,6 +8,7 @@ from seasons_interface.pick_card import PickCard
 from seasons_interface.general_action import GeneralAction
 from seasons_interface.split_card import SplitCard
 from seasons_interface.pick_die import PickDie
+from seasons_interface.play_card import PlayCard
 from dotenv import load_dotenv
 from os import getenv
 from time import sleep
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-class SeasonsInterface(PickCard, GeneralAction, SplitCard, PickDie):
+class SeasonsInterface(PickCard, GeneralAction, SplitCard, PickDie, PlayCard):
     services: list[Service] = []
     drivers: list[webdriver.Chrome] = []
     player: int = 0
@@ -187,3 +188,12 @@ class SeasonsInterface(PickCard, GeneralAction, SplitCard, PickDie):
     
     def can_pick_die(self, action: int):
         return super().can_pick_die(self.drivers[self.player], action)
+    
+    def playable_cards(self):
+        return super().playable_cards(self.drivers[self.player])
+    
+    def play_card(self, action: int):
+        return super().play_card(self.drivers[self.player], action)
+    
+    def can_play_card(self, action: int):
+        return super().can_play_card(self.drivers[self.player], action) and self.status().invocation_level() > len(self.status().cards_in_game())
