@@ -34,4 +34,4 @@ class PickDie():
             return []
     
     def can_pick_die(self, driver: webdriver.Chrome, action: int):
-        return len(PickDie.pickable_dice(self, driver)) > action
+        return len(PickDie.pickable_dice(self, driver)) > action and len(PickDie.pickable_dice(self, driver)) > 1

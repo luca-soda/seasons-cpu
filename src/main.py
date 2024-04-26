@@ -9,6 +9,7 @@ from icecream import ic
 from time import sleep
 from DQN import FlexibleHierarchicalDQN
 from seasons_interface.status import state_dim
+import traceback
 
 device = torch.device(os.getenv('DEVICE') or 'cpu')
 torch.device(device)
@@ -48,16 +49,19 @@ if __name__ == '__main__':
             action_group_logits, actions_logits = models[player](state_tensor)
             specific_action_logits = list(filter(lambda action_logit: action_logit is not None, actions_logits))[0]
             if np.random.rand() < epsilon[player]:
-                action_group = np.random.randint(0, len(action_space.actions))
-                specific_action = np.random.randint(0,action_space.actions[action_group].subactions)
+                specific_actions_filtered = []
+                action_group = 1
+                while len(specific_actions_filtered) == 0:
+                    action_group = np.random.randint(0, len(action_space.actions))
+                    specific_actions_filtered = [sa for sa in range(action_space.actions[action_group].subactions) if action_space.actions[action_group].can_act(sa)]
+                specific_action = random.choice(specific_actions_filtered)
             else: 
                 action_group = torch.argmax(action_group_logits, dim=-1).to(device).item()
                 specific_action = torch.argmax(specific_action_logits, dim=-1).to(device).item()
             prestige_points = game.status().prestige_points()
             crystals = game.status().crystals()
-            ic(action_group, specific_action)
             can_act = action_space.actions[math.floor(action_group)].can_act(math.floor(specific_action))
-            ic(can_act)
+            ic(action_group, specific_action, can_act)
             if can_act:
                 action_space.actions[math.floor(action_group)].act(math.floor(specific_action))
                 sleep(0.5)
@@ -67,10 +71,10 @@ if __name__ == '__main__':
             diff_prestige_points = game.status().prestige_points() - prestige_points
             diff_crystals = game.status().crystals() - crystals
             reward = diff_prestige_points + diff_crystals
+            if (not can_act):
+                reward = -100
             loss_1 = torch.nn.functional.cross_entropy(action_group_logits, torch.tensor([action_group]).to(device))
-            ic(action_group_logits, actions_logits, specific_action_logits)
             loss_2 = torch.nn.functional.cross_entropy(specific_action_logits, torch.tensor([specific_action]).to(device))
-            ic("loss_2")
             loss = loss_1 + loss_2
             optimizers[player].zero_grad()
             loss.backward()
@@ -78,5 +82,6 @@ if __name__ == '__main__':
             epsilon[player] = max(min_epsilon[player], epsilon[player] * epsilon_decays[player])
     except Exception as e:
         ic(e)
+        traceback.print_exc()
     input("Press enter to close the browser")
     game.close_browsers()

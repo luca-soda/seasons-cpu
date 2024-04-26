@@ -139,7 +139,7 @@ class SeasonsInterface(PickCard, GeneralAction, SplitCard, PickDie):
         
     def set_next_player(self):
         if not self.is_my_turn():
-            self.player = self.player + 1 % 2
+            self.player = (self.player + 1) % 2
         return self.player
    
     def load_game(self, driver: webdriver.Remote, url: str):
