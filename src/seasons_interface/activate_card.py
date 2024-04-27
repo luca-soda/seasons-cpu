@@ -1,5 +1,4 @@
-from typing import Optional
-from typing import TypeVar
+from utils import not_none
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -8,11 +7,6 @@ from selenium.webdriver.support import expected_conditions as EC
 import logging
 
 logger = logging.getLogger(__name__)
-
-T = TypeVar('T')
-def not_none(obj: Optional[T]) -> T:
-    assert obj is not None
-    return obj
 
 class ActivateCard():
     def activate_card(self, driver: webdriver.Chrome, action: int):

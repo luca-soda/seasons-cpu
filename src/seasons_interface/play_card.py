@@ -9,11 +9,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
-def not_none(obj: Optional[T]) -> T:
-    assert obj is not None
-    return obj
-
 class PlayCard():
     def play_card(self, driver: webdriver.Chrome, action: int):
         try: 

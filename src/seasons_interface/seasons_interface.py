@@ -1,3 +1,4 @@
+from calendar import c
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -9,6 +10,7 @@ from seasons_interface.general_action import GeneralAction
 from seasons_interface.split_card import SplitCard
 from seasons_interface.pick_die import PickDie
 from seasons_interface.play_card import PlayCard
+from seasons_interface.select_energy import SelectEnergy
 from dotenv import load_dotenv
 from os import getenv
 from time import sleep
@@ -22,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-class SeasonsInterface(PickCard, GeneralAction, SplitCard, PickDie, PlayCard):
+class SeasonsInterface(PickCard, GeneralAction, SplitCard, PickDie, PlayCard, SelectEnergy):
     services: list[Service] = []
     drivers: list[webdriver.Chrome] = []
     player: int = 0
@@ -197,3 +199,12 @@ class SeasonsInterface(PickCard, GeneralAction, SplitCard, PickDie, PlayCard):
     
     def can_play_card(self, action: int):
         return super().can_play_card(self.drivers[self.player], action) and self.status().invocation_level() > len(self.status().cards_in_game())
+    
+    def can_select_energy(self, action: int):
+        return super().can_select_energy(self.drivers[self.player], action) and super().should_select_energy(self.drivers[self.player])
+    
+    def select_energy(self, action: int):
+        return super().select_energy(self.drivers[self.player], action)
+    
+    def selectable_energies(self):
+        return super().selectable_energies(self.drivers[self.player])

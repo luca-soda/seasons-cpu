@@ -8,7 +8,7 @@ from icecream import ic
 
 logger = logging.getLogger(__name__)
 
-blacklisted_actions = ['resetPlayerTurn', 'transmute', 'undo', 'discardEnergy']
+blacklisted_actions = ['resetPlayerTurn', 'transmute', 'undo']
 
 class GeneralAction():
     def click_general_action(self, driver: webdriver.Chrome, action: int):

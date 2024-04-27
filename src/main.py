@@ -22,6 +22,7 @@ if __name__ == '__main__':
     action_space.add_action('split_card', 9, can_act=game.can_split_card, act=game.split_card, list_items=game.splitable_cards)
     action_space.add_action('pick_die', 3, can_act=game.can_pick_die, act=game.pick_die, list_items=game.pickable_dice)
     action_space.add_action('play_card', 15, can_act=game.can_play_card, act=game.play_card, list_items=game.playable_cards)
+    action_space.add_action('select_energy', 40, can_act=game.can_select_energy, act=game.select_energy, list_items=game.selectable_energies)
     actions_per_group = list(map(lambda action: action.subactions, action_space.actions))
     models = [FlexibleHierarchicalDQN(state_dim, len(action_space.actions), actions_per_group) for _ in range(2)]
     models = [model.to(device) for model in models]
